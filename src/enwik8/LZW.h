@@ -14,9 +14,11 @@ class LZW
 {
 private:
 	time_t estart, eend;
+	time_t dstart, dend;
 	void calculateExecutionTime(std::string encodeOrdecode);
 public:
 	LZW();
 	bool encode(std::ifstream &buffer, std::ofstream &encoded);
+	bool decode(std::ifstream &buffer, std::ofstream &decoded);
 	~LZW();
 };

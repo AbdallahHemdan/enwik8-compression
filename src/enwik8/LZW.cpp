@@ -77,6 +77,59 @@ bool LZW::encode(std::ifstream &buffer, std::ofstream &encoded)
 	return true;
 }
 
+bool LZW::decode(std::ifstream &buffer, std::ofstream &decoded)
+{
+	std::cout << "start decoding ..." << std::endl;
+	time(&dstart);
+	std::unordered_map<ui, std::string> table;
+
+	//Initialize codes table
+	for (ui i = 0; i < mx; i++)
+		table[i] = std::string(1, char(i));
+
+	ui lstCode = mx;
+	ui prvCode = 0;
+
+	if (!buffer.read((char *)&prvCode, 3))
+	{
+		return false;
+	}
+
+	// Decode first symbol
+	const char *decodedStr = table[prvCode].c_str();
+	decoded << decodedStr;
+
+	ui code = 0;
+	char c = table[prvCode][0];
+	while (buffer.read((char *)&code, 3))
+	{
+		std::string match;
+		if (table.find(code) == table.end())
+		{
+			match = table[prvCode];
+			match.push_back(c);
+		}
+		else
+		{
+			match = table[code];
+		}
+
+		// Decode the match
+		const char *matchStr = match.c_str();
+		decoded << matchStr;
+		c = match[0];
+
+		// Append previous match + first read character
+		table[lstCode] = table[prvCode];
+		table[lstCode++].push_back(c);
+		prvCode = code;
+		code = 0x0000;
+	}
+	time(&dend);
+	calculateExecutionTime("decode");
+	return true;
+}
+
 LZW::~LZW()
 {
 }

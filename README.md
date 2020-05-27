@@ -64,5 +64,11 @@ $ git clone https://github.com/AbdallahHemdan/enwik8-compression.git
     
 </details>
 
+![1](https://user-images.githubusercontent.com/40190772/83083413-5e841e00-a086-11ea-9405-4a93294e6cba.png)
+![2](https://user-images.githubusercontent.com/40190772/83083418-5fb54b00-a086-11ea-96ef-b93a998c524c.png)
+![3](https://user-images.githubusercontent.com/40190772/83083421-604de180-a086-11ea-9b5b-b16d330dd7bd.png)
+![4](https://user-images.githubusercontent.com/40190772/83083424-617f0e80-a086-11ea-9a63-94b80e078752.png)
+
+
 ## License
 > This software is licensed under MIT License, See [License](https://github.com/AbdallahHemdan/enwik8-compression/blob/master/LICENSE) for more information ©AbdallahHemdan.

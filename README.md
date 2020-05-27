@@ -68,6 +68,7 @@ $ git clone https://github.com/AbdallahHemdan/enwik8-compression.git
 ![2](https://user-images.githubusercontent.com/40190772/83083418-5fb54b00-a086-11ea-96ef-b93a998c524c.png)
 ![3](https://user-images.githubusercontent.com/40190772/83083421-604de180-a086-11ea-9b5b-b16d330dd7bd.png)
 ![4](https://user-images.githubusercontent.com/40190772/83083424-617f0e80-a086-11ea-9a63-94b80e078752.png)
+![5](https://user-images.githubusercontent.com/40190772/83083608-da7e6600-a086-11ea-8568-1a06315b98fd.png)
 
 
 ## License

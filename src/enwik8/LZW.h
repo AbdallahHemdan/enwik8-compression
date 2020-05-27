@@ -15,7 +15,9 @@ class LZW
 private:
 	char curCh;
 	double time_taken;
+	ui code;
 	ui lstCode;
+	ui prvCode;
 	time_t estart, eend;
 	time_t dstart, dend;
 	std::unordered_map<std::string, ui> lookup_si;
@@ -26,6 +28,8 @@ private:
 	bool checkStreamValidation(std::ifstream &input);
 	void validateCode(std::string& curMatch, std::string& nxtMatch, std::ofstream &output);
 	void processLast(std::string& curMatch, std::ofstream &output);
+	bool validateDecodingStream(std::ifstream &input);
+	void processCurrentCode(std::ofstream &output);
 public:
 	LZW();
 	bool encode(std::ifstream &input, std::ofstream &encoded);

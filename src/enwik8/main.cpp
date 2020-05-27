@@ -5,44 +5,44 @@ int main(int argc, char *argv[])
 	LZW lzw;
 	if (argc > 1 && std::string(argv[1]) == std::string("encode|decode"))
 	{
-		auto buffer = std::ifstream(std::string(argv[2]));
+		auto input = std::ifstream(std::string(argv[2]));
 		std::ofstream encoded("./encoded.bin", std::ios::ios_base::binary | std::ios_base::out);
-		if (lzw.encode(buffer, encoded) == false) // failer
+		if (lzw.encode(input, encoded) == false) // failer
 			return -1;
-		buffer.close();
+		input.close();
 		encoded.close();
 	}
 	if (argc > 1 && std::string(argv[1]) == std::string("encode|decode"))
 	{
-		auto buffer = std::ifstream("./encoded.bin", std::ios_base::binary | std::ios_base::in);
+		auto input = std::ifstream("./encoded.bin", std::ios_base::binary | std::ios_base::in);
 		std::ofstream decoded("./decoded.txt", std::ios_base::binary | std::ios_base::out);
-		if (lzw.decode(buffer, decoded) == false) // failer
+		if (lzw.decode(input, decoded) == false) // failer
 		{
 			return -1;
 		}
-		buffer.close();
+		input.close();
 		decoded.close();
 	}
 
 	if (argc > 1 && std::string(argv[1]) == std::string("encode"))
 	{
-		auto buffer = std::ifstream(std::string(argv[2]));
+		auto input = std::ifstream(std::string(argv[2]));
 		std::ofstream encoded("./encoded.bin", std::ios::ios_base::binary | std::ios_base::out);
-		if (lzw.encode(buffer, encoded) == false) // failer
+		if (lzw.encode(input, encoded) == false) // failer
 			return -1;
-		buffer.close();
+		input.close();
 		encoded.close();
 	}
 
 	if (argc > 1 && std::string(argv[1]) == std::string("decode"))
 	{
-		auto buffer = std::ifstream("./encoded.bin", std::ios_base::binary | std::ios_base::in);
+		auto input = std::ifstream("./encoded.bin", std::ios_base::binary | std::ios_base::in);
 		std::ofstream decoded("./decoded.txt", std::ios_base::binary | std::ios_base::out);
-		if (lzw.decode(buffer, decoded) == false) // failer
+		if (lzw.decode(input, decoded) == false) // failer
 		{
 			return -1;
 		}
-		buffer.close();
+		input.close();
 		decoded.close();
 	}
 }

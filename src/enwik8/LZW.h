@@ -13,12 +13,22 @@
 class LZW
 {
 private:
+	char curCh;
+	double time_taken;
+	ui lstCode;
 	time_t estart, eend;
 	time_t dstart, dend;
+	std::unordered_map<std::string, ui> lookup_si;
+	std::unordered_map<ui, std::string> lookup_is;
+
 	void calculateExecutionTime(std::string encodeOrdecode);
+	void initLookup(std::string encodeOrdecode);
+	bool checkStreamValidation(std::ifstream &input);
+	void validateCode(std::string& curMatch, std::string& nxtMatch, std::ofstream &output);
+	void processLast(std::string& curMatch, std::ofstream &output);
 public:
 	LZW();
-	bool encode(std::ifstream &buffer, std::ofstream &encoded);
-	bool decode(std::ifstream &buffer, std::ofstream &decoded);
+	bool encode(std::ifstream &input, std::ofstream &encoded);
+	bool decode(std::ifstream &input, std::ofstream &decoded);
 	~LZW();
 };

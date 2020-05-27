@@ -1,15 +1,16 @@
 #include "LZW.h"
 
 
-void LZW::calculateExecutionTime(std::string encodeOrdecode)
-{
+LZW::LZW() {}
+
+void LZW::calculateExecutionTime(std::string encodeOrdecode) {
 	if (encodeOrdecode == "encode") {
-		double time_taken = double(eend - estart);
+		time_taken = double(eend - estart);
 		std::cout << "Time taken by encoding is : " << std::fixed
 			<< time_taken << std::setprecision(5);
 	}
 	else {
-		double time_taken = double(dend - dstart);
+		time_taken = double(dend - dstart);
 		std::cout << "Time taken by decoding is : " << std::fixed
 			<< time_taken << std::setprecision(5);
 	}
@@ -17,111 +18,123 @@ void LZW::calculateExecutionTime(std::string encodeOrdecode)
 	std::cout << "end decoding ..." << std::endl;
 }
 
-LZW::LZW()
-{
+void LZW::initLookup(std::string encodeOrdecode) {
+	for (ui i = 0; i < mx; i++) {
+		if (encodeOrdecode == "encode") {
+			this->lookup_si[std::string(1, char(i))] = i;
+		}
+		else {
+			this->lookup_is[i] = std::string(1, char(i));
+		}
+	}
 }
 
-bool LZW::encode(std::ifstream &buffer, std::ofstream &encoded)
-{
+bool LZW::checkStreamValidation(std::ifstream &input) {
+	if (!input.get(curCh)) {
+		std::cout << "fails to read from the stream" << std::endl;
+		return false;
+	}
+	return true;
+}
+
+void LZW::validateCode(std::string& curMatch, std::string& nxtMatch, std::ofstream &output) {
+	// check if the current code exists or not in the table
+	if (this->lookup_si.find(nxtMatch) != this->lookup_si.end()) { // it's a known code
+		curMatch = nxtMatch;
+	}
+	else { // it's unknown code
+
+		 // 1st. store it in the file
+		ui code = this->lookup_si[curMatch];
+		output.put(code & semi);
+		output.put((code >> 8) & semi);
+		output.put((code >> 16) & semi);
+
+		// 2nd. save it in the table 
+		this->lookup_si[nxtMatch] = lstCode++;
+
+		// 3rd. reset current match
+		curMatch = std::string(1, this->curCh);
+	}
+}
+
+void LZW::processLast(std::string& curMatch, std::ofstream &output) {
+	ui code = this->lookup_si[curMatch];
+	output.put(code & semi);
+	output.put((code >> 8) & semi);
+	output.put((code >> 16) & semi);
+}
+
+bool LZW::encode(std::ifstream &input, std::ofstream &output) {
 	std::cout << "start encoding ..." << std::endl;
 	time(&estart);
 	std::ios_base::sync_with_stdio(false);
 
-	// declar and init the lookup table
-	std::unordered_map<std::string, ui> lookup;
-	for (ui i = 0; i < mx; i++) {
-		lookup[std::string(1, char(i))] = i;
-	}
-
-	// read 
-	char c;
-	if (!buffer.get(c))
-	{ // fails to read from the stream
-		std::cout << "fails to read from the stream" << std::endl;
+	// init the lookup table
+	this->initLookup("encode");
+	// fails to read from the stream
+	if (!this->checkStreamValidation(input)) {
 		return false;
 	}
 
-	std::string match(1, c);
-	ui lstCode = mx;
-	while (buffer.get(c))
-	{
-		// search for match
-		std::string nxtMatch = match;
-		nxtMatch.push_back(c);
+	std::string curMatch(1, this->curCh);
+	lstCode = mx;
 
-		// known code
-		if (lookup.find(nxtMatch) != lookup.end())
-		{
-			match = nxtMatch;
-		}
-		else // unknown code
-		{
-			ui code = lookup[match];
-			encoded.put(code & semi);
-			encoded.put((code >> 8) & semi);
-			encoded.put((code >> 16) & semi);
-			lookup[nxtMatch] = lstCode++;
-			match = std::string(1, c);
-		}
+	// process all file
+	while (input.get(this->curCh)) {
+		std::string nxtMatch = curMatch;
+		nxtMatch += this->curCh;
+		this->validateCode(curMatch, nxtMatch, output);
 	}
 
-	// process and encode lst match string
-	ui code = lookup[match];
-	encoded.put(code & semi);
-	encoded.put((code >> 8) & semi);
-	encoded.put((code >> 16) & semi);
+	// process and encode last match
+	this->processLast(curMatch, output);
 
 	// calculate time take by encoding function to process all the file
 	time(&eend);
-	calculateExecutionTime("encode");
+	this->calculateExecutionTime("encode");
 	return true;
 }
 
-bool LZW::decode(std::ifstream &buffer, std::ofstream &decoded)
+bool LZW::decode(std::ifstream &input, std::ofstream &output)
 {
 	std::cout << "start decoding ..." << std::endl;
 	time(&dstart);
-	std::unordered_map<ui, std::string> table;
 
-	//Initialize codes table
-	for (ui i = 0; i < mx; i++)
-		table[i] = std::string(1, char(i));
+	// init the lookup table
+	this->initLookup("decode");
 
 	ui lstCode = mx;
 	ui prvCode = 0;
 
-	if (!buffer.read((char *)&prvCode, 3))
-	{
+	if (!input.read((char *)&prvCode, 3)) {
 		return false;
 	}
 
 	// Decode first symbol
-	const char *decodedStr = table[prvCode].c_str();
-	decoded << decodedStr;
+	const char *decodedStr = this->lookup_is[prvCode].c_str();
+	output << decodedStr;
 
 	ui code = 0;
-	char c = table[prvCode][0];
-	while (buffer.read((char *)&code, 3))
-	{
-		std::string match;
-		if (table.find(code) == table.end())
-		{
-			match = table[prvCode];
-			match.push_back(c);
+	char curCh = this->lookup_is[prvCode][0];
+	while (input.read((char *)&code, 3)) {
+		std::string curMatch;
+		if (this->lookup_is.find(code) == this->lookup_is.end()) {
+			curMatch = this->lookup_is[prvCode];
+			curMatch.push_back(curCh);
 		}
-		else
-		{
-			match = table[code];
+		else {
+			curMatch = lookup_is[code];
 		}
 
-		// Decode the match
-		const char *matchStr = match.c_str();
-		decoded << matchStr;
-		c = match[0];
+		// Decode the curMatch
+		const char *matchStr = curMatch.c_str();
+		output << matchStr;
+		curCh = curMatch[0];
 
-		// Append previous match + first read character
-		table[lstCode] = table[prvCode];
-		table[lstCode++].push_back(c);
+		// Append previous curMatch + first read character
+		this->lookup_is[lstCode] = this->lookup_is[prvCode];
+		this->lookup_is[lstCode++].push_back(curCh);
 		prvCode = code;
 		code = 0x0000;
 	}

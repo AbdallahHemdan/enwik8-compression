@@ -21,10 +21,15 @@
 # About
 > Compressing the challenge **enwik8** which is the first 100MB of Wikipedia using **LZW**(Lempel–Ziv–Welch) using c++.
 
+![Annotation 2020-05-28 021516](https://user-images.githubusercontent.com/40190772/83084427-2f22e080-a089-11ea-8fd5-e67348fc32e3.png)
+
+
 ## Statistics
 - Input file size : **95.3 MB**
 - Output file size : **34 MB**
 - Compression ratio : **~2.8**
+- Encoding time : **~30 sec**
+- Decoding time : **~10 sec**
 
 ## How to use
 
